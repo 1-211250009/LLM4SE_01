@@ -129,8 +129,10 @@ def process_directory(input_dir, font_size=24, color='white', position='bottom-r
     # 支持的图片格式
     image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.bmp', '*.tiff', '*.tif']
     
-    # 创建输出目录
-    output_dir = f"{input_dir}_watermark"
+    # 创建输出目录 - 在原目录名后添加_watermark
+    # 如果input_dir以/结尾，去掉末尾的/
+    clean_dir = input_dir.rstrip('/')
+    output_dir = f"{clean_dir}_watermark"
     os.makedirs(output_dir, exist_ok=True)
     
     # 查找所有图片文件
@@ -188,7 +190,12 @@ def main():
         # 处理单个文件
         filename = os.path.basename(args.input_path)
         name, ext = os.path.splitext(filename)
-        output_dir = f"{os.path.dirname(args.input_path)}_watermark"
+        # 获取文件所在目录，并在目录名后添加_watermark
+        file_dir = os.path.dirname(args.input_path)
+        if file_dir:  # 如果文件不在当前目录
+            output_dir = f"{file_dir}_watermark"
+        else:  # 如果文件在当前目录
+            output_dir = f"{os.path.basename(os.getcwd())}_watermark"
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, f"{name}_watermark{ext}")
         add_watermark(args.input_path, output_path, args.size, args.color, args.position)
